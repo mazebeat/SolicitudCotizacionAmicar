@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="SolicitudCotizacionAmicar:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="SolicitudCotizacionAmicar-0.0.5-SNAPSHOT.war">
+      <element id="artifact" artifact-name="SolicitudCotizacionAmicar:war exploded" />
+    </root>
+  </artifact>
+</component>

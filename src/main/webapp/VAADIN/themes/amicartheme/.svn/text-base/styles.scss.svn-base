@@ -1,0 +1,16 @@
+@import "addons.scss";
+@import "amicartheme.scss";
+
+/* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
+/* The actual styles should be defined in amicartheme.scss */
+.amicartheme {
+  @include addons;
+
+  // Include amicartheme theme styles in your theme
+  @include amicartheme;
+
+.v-app{
+background: #FFFFFF;
+}
+
+}

@@ -1,0 +1,75 @@
+package cl.intelidata.amicar.beans;
+
+import cl.intelidata.amicar.bd.Proceso;
+import cl.intelidata.amicar.db.ConsultasDB;
+import cl.intelidata.amicar.referencias.Texto;
+import cl.intelidata.conf.Configuracion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class Procesar {
+	/*******************************************************************************************************/
+	/********************************************** Atributos **********************************************/
+	private static Logger logger = LoggerFactory.getLogger(Procesar.class);
+	/**
+	 * ***************************************************************************************************
+	 */
+
+	protected Proceso proceso;
+
+	/*******************************************************************************************************/
+	/******************************************** Constructores ********************************************/
+	/**
+	 * ***************************************************************************************************
+	 */
+
+	public Procesar() {
+
+	}
+
+	public Procesar(Proceso proceso) {
+		this.proceso = proceso;
+	}
+
+	/*******************************************************************************************************/
+	/*********************************************** Metodos ***********************************************/
+	/**
+	 * ***************************************************************************************************
+	 */
+
+	public void guardarCotizacion() {
+		try {
+			ConsultasDB consultasDB = new ConsultasDB();
+			Date fecha = new Date();
+			Timestamp time = new Timestamp(fecha.getTime());
+			this.proceso.setFechaClickLink(time);
+			consultasDB.updateProceso(this.proceso);
+			this.mailEjecutivo(this.proceso);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void mailEjecutivo(Proceso proceso) {
+		try {
+			Archivo archivo = new Archivo(Configuracion.getInstance().getInitParameter("SalidaEmmesaging"), Configuracion.getInstance().getInitParameter("SalidaEmmesaging"));
+			List<String> mail = new ArrayList<String>();
+			mail.add(
+					Texto.LLAVE_INICIO + "|" + proceso.getEjecutivos().getCorreoEjecutivo() + "|" + proceso.getClientes().getRutCliente() + "|" + proceso.getEjecutivos().getLocales().getNombreLocal() + "|" + proceso.getClientes().getEmailCliente() + "|" + proceso.getVendedores().getNombreVendedor() + "|" + proceso.getFechaClickLink() + "|"
+			);
+			archivo.guardarLista(mail, "Ejecutivos", "txt");
+
+			logger.info(
+					"Mail id: " + proceso.getIdProceso() + " cliente id: " + proceso.getClientes().getRutCliente() + " ejecutivo id: " + proceso.getEjecutivos().getIdEjecutivo() + "  vendedor id: " + proceso.getVendedores().getIdVendedor() + " fecha envio: " + proceso.getFechaEnvio() + " fecha click: " + proceso.getFechaClickLink()
+			);
+		} catch (Exception e) {
+			logger.error("Error al generar la data para email. \nCausado por:\n " + e.getMessage());
+		}
+
+	}
+}
